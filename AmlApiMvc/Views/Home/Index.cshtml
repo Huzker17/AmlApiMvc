@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <form id="myForm" action="/submit" method="post">
+
+        <!-- Input element for entering a string -->
+        <label for="stringInput">Enter a string:</label>
+        <input type="text" id="stringInput" name="stringInput" placeholder="Type your string here">
+        <div class="error-message" id="stringInputError"></div>
+
+        <br><br>
+        <!-- Select element for choosing an option -->
+        <label for="selectOption">Choose an option:</label>
+        <select id="selectOption" name="selectOption">
+            <!-- Options will be populated dynamically using jQuery -->
+        </select>
+        <div class="error-message" id="selectOptionError"></div>
+
+        <br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/js/amlapi.js"></script>
