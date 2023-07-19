@@ -13,13 +13,17 @@ namespace AmlApiMvc.Controllers
             _amlService = amlService;
         }
         [HttpPost(Name ="SendWalletAddress")]
-        public async Task<IActionResult> SendWalletAddress(WalletAddress walletAddress)
+        public async Task<IActionResult> SendWalletAddress([FromBody] WalletAddress walletAddress)
         {
             if (walletAddress == null) 
                 throw new ArgumentNullException(nameof(walletAddress));
             
-            await _amlService.SendToAmlAsync(walletAddress);
-            return View();
+            var amlResponse = await _amlService.SendToAmlAsync(walletAddress);
+
+            if(amlResponse == null)
+                return Ok("Error");
+
+            return Ok(amlResponse);
         }
 
         [HttpGet]

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AmlApiMvc.Models
@@ -7,7 +8,7 @@ namespace AmlApiMvc.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public int Id { get; init; }
         [Required]
 
         public DateTime DateTime { get; init; }
@@ -27,6 +28,12 @@ namespace AmlApiMvc.Models
         public string Uid { get; init; }
         [Required]
         public AmlResponseStatus Status { get; init; }
+
+        [ForeignKey(nameof(AmlRequest))]
+        [JsonIgnore]
+        public Guid AmlRequestId { get; set; }
+        [JsonIgnore]
+        public AmlRequest AmlRequest { get; set; } = null!;
 
         public AmlResponse(DateTime dateTime, string address, string network, double riskScore, string xlsReport, string uid, AmlResponseStatus status)
         {

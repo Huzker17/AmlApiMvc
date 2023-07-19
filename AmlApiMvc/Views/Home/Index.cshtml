@@ -1,29 +1,33 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<div id="popupContainer" style="display:none">
+    <div id="popup">
+        <div>
+            <div id="popupCloseButton">&times;</div>
+            <div id="popupHeader"></div>
+        </div>
+        <p id="popupMessage"></p>
+        <div class="align-items-center">
+            <button id="closePopup2" class="closePopup1">Отмена</button>
+            <button id="closePopup1" class="closePopup1">ОK</button>
+        </div>
+    </div>
+</div>
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    <form id="myForm" action="/submit" method="post">
-
-        <!-- Input element for entering a string -->
-        <label for="stringInput">Enter a string:</label>
-        <input type="text" id="stringInput" name="stringInput" placeholder="Type your string here">
-        <div class="error-message" id="stringInputError"></div>
-
+        <label for="walletAddress">Введите адрес:</label>
+        <input type="text" id="walletAddress" name="walletAddress" placeholder="Введите адрес, который хотите проверить">
+        <div class="error-message" id="walletAddressError"></div>
         <br><br>
-        <!-- Select element for choosing an option -->
-        <label for="selectOption">Choose an option:</label>
-        <select id="selectOption" name="selectOption">
-            <!-- Options will be populated dynamically using jQuery -->
+        <label for="networkType">Выберите сеть</label>
+        <select id="networkType" name="networkType">
         </select>
-        <div class="error-message" id="selectOptionError"></div>
-
+        <div class="error-message" id="networkTypeError"></div>
         <br><br>
-
-        <button type="submit">Submit</button>
-    </form>
+        <button type="submit" onclick="sendWalletAddress()">Submit</button>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="~/js/amlapi.js"></script>

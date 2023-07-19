@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AmlApiMvc.Models
 {
-    public class AmlReCheckRequest
+    public class AmlRecheckRequest
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -16,7 +17,13 @@ namespace AmlApiMvc.Models
         [Required]
         public string Token { get; init; }
 
-        public AmlReCheckRequest(string accesId, string uid, string token)
+        [ForeignKey(nameof(AmlRequest))]
+        [JsonIgnore]
+        public Guid AmlRequestId { get; set; }
+        [JsonIgnore]
+        public AmlRequest AmlRequest { get; set; } = null!;
+
+        public AmlRecheckRequest(string accesId, string uid, string token)
         {
             AccesId = accesId ?? throw new ArgumentNullException(nameof(accesId));
             Uid = uid ?? throw new ArgumentNullException(nameof(uid));

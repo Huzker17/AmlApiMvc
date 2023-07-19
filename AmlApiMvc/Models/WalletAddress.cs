@@ -21,8 +21,10 @@ namespace AmlApiMvc.Models
                 Address = address ?? throw new ArgumentNullException(nameof(address));
                 NetworkType = networkType ?? throw new ArgumentNullException(nameof(networkType));
             }
-
-            throw new Exception();
+            else
+            {
+                throw new Exception();
+            }
         }
 
         public bool CheckAddressAndType(string? address, string type)

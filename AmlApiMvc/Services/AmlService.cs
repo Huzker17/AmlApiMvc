@@ -40,7 +40,6 @@ namespace AmlApiMvc.Services
 
             string token = CreateMD5($"{walletAddress.Address}:{AccessKey}:{string.Empty}");
             var amlRequest = new AmlRequest("", "", walletAddress.Address,walletAddress.NetworkType, token);
-            await _db.AmlRequests.AddAsync(amlRequest);
             await _db.WalletAddresses.AddAsync(walletAddress);
 
             string requestContent = JsonConvert.SerializeObject(amlRequest);
@@ -53,6 +52,8 @@ namespace AmlApiMvc.Services
             if (response.IsSuccessStatusCode)
             {
                 var amlResponse = await HandleResponseAsync(response);
+                amlRequest.AmlResponse = amlResponse;
+                await _db.AmlRequests.AddAsync(amlRequest);
                 await _db.AmlResponses.AddAsync(amlResponse);
                 await _db.SaveChangesAsync();
                 return amlResponse;
@@ -67,13 +68,12 @@ namespace AmlApiMvc.Services
         /// <returns>AmlResponse</returns>
         /// <exception cref="NullReferenceException"></exception>
         /// <exception cref="HttpRequestException"></exception>
-        public async Task<AmlResponse> ResendToAmlApi(AmlReCheckRequest reCheckRequest)
+        public async Task<AmlResponse> ResendToAmlApi(AmlRecheckRequest recheckRequest)
         {
-            if (reCheckRequest == null)
-                throw new NullReferenceException(nameof(reCheckRequest));
+            if (recheckRequest == null)
+                throw new NullReferenceException(nameof(recheckRequest));
 
-            await _db.AmlReCheckRequests.AddAsync(reCheckRequest);
-            string requestContent = JsonConvert.SerializeObject(reCheckRequest);
+            string requestContent = JsonConvert.SerializeObject(recheckRequest);
 
             var restRequest = new RestRequest(requestContent)
             {
@@ -83,6 +83,8 @@ namespace AmlApiMvc.Services
             if (response.IsSuccessStatusCode)
             {
                 var amlResponse = await HandleResponseAsync(response);
+                recheckRequest.AmlRequest = amlResponse.AmlRequest;
+                await _db.AmlRecheckRequests.AddAsync(recheckRequest);
                 await _db.AmlResponses.AddAsync(amlResponse);
                 await _db.SaveChangesAsync();
                 return await HandleResponseAsync(response);
@@ -105,18 +107,37 @@ namespace AmlApiMvc.Services
                 throw new ArgumentNullException(nameof(message));
 
             var content = message.Content ?? throw new NullReferenceException(nameof(message.Content));
+            if(!IsContentValid(content))
+                throw new HttpRequestException(nameof(content));
 
             var amlResponse = JsonConvert.DeserializeObject<AmlResponse>(content) ?? throw new NullReferenceException(nameof(content));
 
             if (CheckForResend(amlResponse))
             {
                 var token = CreateMD5($"{amlResponse.Uid}:{AccessKey}:{string.Empty}");
-                var amlReCheckRequest = new AmlReCheckRequest("", amlResponse.Uid, token);
+                var amlReCheckRequest = new AmlRecheckRequest("", amlResponse.Uid, token);
                 return await ResendToAmlApi(amlReCheckRequest);
             }
 
             return amlResponse ?? throw new NullReferenceException(nameof(amlResponse));
         }
+        /// <summary>
+        /// Проверка контента на валидность
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        private static bool IsContentValid(string responseContent)
+        {
+            if(string.IsNullOrEmpty(responseContent))
+                throw new ArgumentNullException(nameof(responseContent));
+
+            if (responseContent.Contains("false"))
+                return false;
+
+            return true;
+        }
+
         /// <summary>
         /// Получаем типы сетей
         /// </summary>
