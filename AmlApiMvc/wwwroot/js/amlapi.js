@@ -63,21 +63,21 @@ function sendWalletAddress() {
         data: JSON.stringify(formData),
         contentType: 'application/json',
         success: function (response) {
-            console.log('Form data sent successfully');
             console.log(response);
+            checkAmlResponse(response)
         },
         error: function (xhr, status, error) {
             console.log('Error sending form data:', error);
-            showErrorPopup("Ошибка", "Возникла ошибка формата адреса: " + "'"+address+"'"+ "should be valid DOGE address or script")
+            showPopup(encodeURI("Ошибка"), encodeURI("Возникла ошибка формата адреса: ") + "'" +address+"'"+ "should be valid DOGE address or script", "Error")
         }
     });
 }
 function checkAmlResponse(response) {
-    if (response == "Error")
+    if (response == "Warning")
     {
-        showErrorPopup("Внимание! Вероятно по данному адресус ещё нет"+ 
+        showPopup(encodeURI("Внимание!"), encodeURI("Вероятно по данному адресус ещё нет"+ 
             "информации в базе данных.Рекомендуем проверить через несколько минут" +
-            "после подтверждения первой транзакции для этого адреса.");
+            "после подтверждения первой транзакции для этого адреса."), response);
     }
     else
     {
@@ -97,8 +97,35 @@ function checkAmlResponse(response) {
     }
 }
 
+function showPopup(headerMessage, bodyMessage, typeOfPopup) {
+    console.log(headerMessage);
+    console.log(bodyMessage);
+    const buttonContainer = document.getElementById('popupButtonContainer');
+    if (typeOfPopup == "Warning") {
+        document.getElementById('popup').style.backgroundColor = '#302a75';
 
-function showErrorPopup(headerMessage,bodyMessage) {
+        const checkButton = document.createElement("button");
+        checkButton.textContent = "Проверить";
+        checkButton.id = "closePopup3";
+        checkButton.classList.add("closePopup3");
+        checkButton.addEventListener('click', function () {
+            document.getElementById('popupContainer').style.display = 'none';
+        });
+        buttonContainer.appendChild(checkButton);
+    }
+    else {
+        document.getElementById('popup').style.backgroundColor = '#ff3a3a';
+
+        const okButton = document.createElement("button");
+        okButton.textContent = "OK";
+        okButton.id = "closePopup2";
+        okButton.addEventListener('click', function () {
+            document.getElementById('popupContainer').style.display = 'none';
+        });
+        okButton.classList.add("closePopup2");
+
+        buttonContainer.appendChild(okButton);
+    }
     document.getElementById('popupHeader').innerText = headerMessage;
     document.getElementById('popupMessage').innerText = bodyMessage;
     document.getElementById('popupContainer').style.display = 'block';
@@ -107,12 +134,10 @@ function showErrorPopup(headerMessage,bodyMessage) {
 document.getElementById('popupCloseButton').addEventListener('click', function () {
     document.getElementById('popupContainer').style.display = 'none';
 });
-document.get('closePopup1').addEventListener('click', function () {
+document.getElementById('closePopup1').addEventListener('click', function () {
     document.getElementById('popupContainer').style.display = 'none';
 });
-document.getElementById('closePopup2').addEventListener('click', function () {
-    document.getElementById('popupContainer').style.display = 'none';
-});
+
 
 document.getElementById('popupContainer').addEventListener('click', function (event) {
     if (event.target === this) {

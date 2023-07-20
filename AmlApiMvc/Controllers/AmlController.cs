@@ -21,7 +21,7 @@ namespace AmlApiMvc.Controllers
             var amlResponse = await _amlService.SendToAmlAsync(walletAddress);
 
             if(amlResponse == null)
-                return Ok("Error");
+                return Ok("Warning");
 
             return Ok(amlResponse);
         }

@@ -40,15 +40,23 @@ body {
     margin-right: 15px;
     width: 150px;
     height: 45px;
-    background: white;
-    color: red;
+    background: transparent;
+    color: white;
     border: 0.5px solid white;
     border-radius: 9px;
 }
 #closePopup2 {
-    background-color: #fe4040;
+    background-color: white;
     width: 150px;
-    height:45px;
+    height: 45px;
+    color: red;
+    border: 0.5px solid white;
+    border-radius: 9px;
+}
+#closePopup3 {
+    background-color: #515bff;
+    width: 150px;
+    height: 45px;
     border: 0.5px solid white;
     border-radius: 9px;
     color: white;
@@ -58,7 +66,6 @@ body {
     margin: auto auto;
     width: 36%;
     padding: 20px;
-    background-color: #ff3a3a;
     color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     display: flex;
