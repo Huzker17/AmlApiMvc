@@ -143,7 +143,7 @@ namespace AmlApiMvc.Services
         /// <returns></returns>
         public async Task<IEnumerable<AmlResponse>> GetAmlResponsesAsync()
         {
-            return  await _db.AmlResponses.ToArrayAsync();
+            return  await _db.AmlResponses.AsNoTracking().ToArrayAsync();
         }
 
         /// <summary>
@@ -156,14 +156,14 @@ namespace AmlApiMvc.Services
             {
                 if (result == null)
                 {
-                    result = await _db.NetworkTypes.ToArrayAsync();
+                    result = await _db.NetworkTypes.AsNoTracking().ToArrayAsync();
                     _cache.Set("networkTypes", result);
                     return result;
                 }
 
                 return result;
             }
-            return await _db.NetworkTypes.ToArrayAsync();
+            return await _db.NetworkTypes.AsNoTracking().ToArrayAsync();
         }
 
         /// <summary>
