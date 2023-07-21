@@ -25,6 +25,15 @@ namespace AmlApiMvc.Controllers
 
             return Ok(amlResponse);
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAmlResponses()
+        {
+            var amlResponses = await _amlService.GetAmlResponsesAsync();
+            if(amlResponses == null)
+                throw new NullReferenceException(nameof(amlResponses));
+
+            return Ok(amlResponses);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetNetworkTypes()

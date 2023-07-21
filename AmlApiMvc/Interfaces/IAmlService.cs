@@ -7,5 +7,6 @@ namespace AmlApiMvc.Interfaces
         Task<AmlResponse> SendToAmlAsync(WalletAddress walletAddress);
         Task<AmlResponse> ResendToAmlApi(AmlRecheckRequest reCheckRequest);
         Task<IEnumerable<NetworkType>> GetNetworkTypesAsync();
+        Task<IEnumerable<AmlResponse>> GetAmlResponsesAsync();
     }
 }

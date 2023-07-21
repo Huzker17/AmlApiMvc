@@ -1,22 +1,41 @@
+const itemsPerPage = 8;
 $(document).ready(function () {
-    function fillNetworkTypes() {
-        $.ajax({
-            url: '/Aml/GetNetworkTypes',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                $('#networkType').empty();
-                $.each(data, function (index, option) {
-                    $('#networkType').append('<option value="' + option.name + '">' + option.name + '</option>');
-                });
-            },
-            error: function (xhr, status, error) {
-                console.log('Error fetching options:', error);
-            }
-        });
-    }
+
     fillNetworkTypes();
+    fillAmlResponses();
+
 });
+function fillAmlResponses() {
+    $.ajax({
+        url: '/Aml/GetAmlResponses',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            $('#networkType').empty();
+            displayPage(1, response);
+            generatePagination(response);
+        },
+        error: function (xhr, status, error) {
+            console.log('Error fetching options:', error);
+        }
+    });
+}
+function fillNetworkTypes() {
+    $.ajax({
+        url: '/Aml/GetNetworkTypes',
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            $('#networkType').empty();
+            $.each(data, function (index, option) {
+                $('#networkType').append('<option value="' + option.name + '">' + option.name + '</option>');
+            });
+        },
+        error: function (xhr, status, error) {
+            console.log('Error fetching options:', error);
+        }
+    });
+}
 function validateForm() {
     var selectValue = $('#networkType').val();
     var inputValue = $('#walletAddress').val();
@@ -34,7 +53,7 @@ function validateForm() {
     }
     if (!inputValue) {
         $('#walletAddress').css('border', '1px solid red');
-        $('#walletAddressError').text('Введите адрес.');
+        $('#walletAddressError').text('пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ.');
         valid = false;
     } else {
         $('#walletAddress').css('border', '1px solid #ccc');
@@ -44,7 +63,6 @@ function validateForm() {
 }
 
 function sendWalletAddress() {
-    console.log("I am here");
     if (!validateForm()) {
         preventDefault();
     }
@@ -55,7 +73,6 @@ function sendWalletAddress() {
         address: address,
         networkType: $('#networkType').val()
     };
-    console.log(formData);
 
     $.ajax({
         url: '/Aml/SendWalletAddress',
@@ -63,49 +80,65 @@ function sendWalletAddress() {
         data: JSON.stringify(formData),
         contentType: 'application/json',
         success: function (response) {
-            console.log(response);
             checkAmlResponse(response)
         },
         error: function (xhr, status, error) {
-            console.log('Error sending form data:', error);
-            showPopup(encodeURI("Ошибка"), encodeURI("Возникла ошибка формата адреса: ") + "'" +address+"'"+ "should be valid DOGE address or script", "Error")
+            showPopup("РћС€РёР±РєР°", "Р’РѕР·РЅРёРєР»Р° РѕС€РёР±РєР° С„РѕСЂРјР°С‚Р° Р°РґСЂРµСЃР°: " + "'" +address+"'"+ "should be valid DOGE address or script", "Error")
         }
     });
 }
 function checkAmlResponse(response) {
     if (response == "Warning")
     {
-        showPopup(encodeURI("Внимание!"), encodeURI("Вероятно по данному адресус ещё нет"+ 
-            "информации в базе данных.Рекомендуем проверить через несколько минут" +
-            "после подтверждения первой транзакции для этого адреса."), response);
-    }
-    else
-    {
-        var addressList = $('#addressList');
-        addressList.empty();
-        var header = $('<li></li>');
-        listItem.text('Время Адрес  Сеть   Оценка риска Отчет PDF ');
-        addressList.append(header);
-        $.each(response, function (index, address) {
-            var listItem = $('<li></li>');
-            listItem.text(address.dateTime + address.address + address.network + address.riskScore );
-            if (index === response.length - 1) {
-                text += ' - <a href="' + address.xlsReport + '">Скачать</a>';
-            }
-            addressList.append(listItem);
-        });
+        showPopup("Р’РЅРёРјР°РЅРёРµ!", "Р’РµСЂРѕСЏС‚РЅРѕ РїРѕ РґР°РЅРЅРѕРјСѓ Р°РґСЂРµСЃСѓ РµС‰С‘ РЅРµС‚"+ 
+            "РёРЅС„РѕСЂРјР°С†РёРё РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…. Р РµРєРѕРјРµРЅРґСѓРµРј РїСЂРѕРІРµСЂРёС‚СЊ С‡РµСЂРµР·" +
+            "РЅРµСЃРєРѕР»СЊРєРѕ РјРёРЅСѓС‚ РїРѕСЃР»Рµ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ РїРµСЂРІРѕР№ С‚СЂР°РЅР·Р°РєС†РёРё РґР»СЏ СЌС‚РѕРіРѕ Р°РґСЂРµСЃР°", response);
     }
 }
 
+// Function to display a specific page of items
+function displayPage(pageNumber, response) {
+    const startIndex = (pageNumber - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, response.length);
+
+    const addressList = $('#addressList');
+    addressList.empty();
+
+    for (let i = startIndex; i < endIndex; i++) {
+        const address = response[i];
+        const listItem = $('<li></li>');
+        listItem.text(address.dateTime + ' ' + address.address + ' ' + address.network + ' ' + address.riskScore);
+        if (i === response.length - 1) {
+            listItem.append(' - <a href="' + address.xlsReport + '">РЎРєР°С‡Р°С‚СЊ</a>');
+        }
+        addressList.append(listItem);
+    }
+}
+
+// Function to generate pagination links
+function generatePagination(response) {
+    const totalPages = Math.ceil(response.length / itemsPerPage);
+    const pagination = $('#pagination');
+    pagination.empty();
+
+    for (let i = 1; i <= totalPages; i++) {
+        const pageLink = $('<a href="#" data-page="' + i + '">' + i + '</a>');
+        pageLink.on('click', function () {
+            const pageNumber = $(this).data('page');
+            displayPage(pageNumber);
+        });
+        pagination.append(pageLink);
+    }
+}
+
+
 function showPopup(headerMessage, bodyMessage, typeOfPopup) {
-    console.log(headerMessage);
-    console.log(bodyMessage);
     const buttonContainer = document.getElementById('popupButtonContainer');
     if (typeOfPopup == "Warning") {
         document.getElementById('popup').style.backgroundColor = '#302a75';
 
         const checkButton = document.createElement("button");
-        checkButton.textContent = "Проверить";
+        checkButton.textContent = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
         checkButton.id = "closePopup3";
         checkButton.classList.add("closePopup3");
         checkButton.addEventListener('click', function () {

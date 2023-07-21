@@ -137,6 +137,14 @@ namespace AmlApiMvc.Services
 
             return true;
         }
+        /// <summary>
+        /// Получаем AmlResponse
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<AmlResponse>> GetAmlResponsesAsync()
+        {
+            return  await _db.AmlResponses.ToArrayAsync();
+        }
 
         /// <summary>
         /// Получаем типы сетей
